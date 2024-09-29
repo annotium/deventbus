@@ -17,7 +17,8 @@ class EventBus {
   EventBus._() : _streamControllerMap = <Type, StreamController>{};
 
   /// Consumer must close the sunscription after used
-  StreamSubscription<T> _registerEvent<T extends BaseEvent>(
+  @visibleForTesting
+  StreamSubscription<T> registerEvent<T extends BaseEvent>(
     ValueChanged<T> onData, {
     bool sync = false,
   }) {
@@ -33,13 +34,13 @@ class EventBus {
     return stream.listen(onData);
   }
 
-  static StreamSubscription<T> registerEvent<T extends BaseEvent>(
+  static StreamSubscription<T> listen<T extends BaseEvent>(
     ValueChanged<T> onData, {
     bool sync = false,
   }) =>
-      _instance._registerEvent(onData, sync: sync);
+      _instance.registerEvent(onData, sync: sync);
 
-  static void fire<T extends BaseEvent>(T event) {
+  static void emit<T extends BaseEvent>(T event) {
     final type = event.runtimeType;
     _instance._streamControllerMap[type]?.add(event);
   }
